@@ -19,7 +19,6 @@ import com.example.demo.service.TaskService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,7 +60,7 @@ public class TaskController {
              task = taskService.updateTask(taskDTO);
                 return ResponseEntity.ok(task);
         } catch (CustomeException e) {
-            e.printStackTrace();
+            e.getMessage();
         }
         return null;
         
@@ -71,11 +70,10 @@ public class TaskController {
     public ResponseEntity<Task> receiveTaskCreated(@RequestBody TaskDTO taskDTO) {
         //TODO: process POST request
         try {
-             task =taskService.creatTask(taskDTO); 
+             Task task = taskService.creatTask(taskDTO); 
              return ResponseEntity.ok(task);
         } catch (Exception e) {
-            //TODO: handle exception
-            e.getMessage();
+            e.printStackTrace();
         }
         return null; 
     }
