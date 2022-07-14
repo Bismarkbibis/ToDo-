@@ -1,6 +1,10 @@
 package com.example.demo.service;
 
-
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +30,8 @@ public class TaskService {
     private TopicRepository topicRepository;
 
     private Map<String,String> error= new HashMap<>();
+
+    private Date theDate = null;
 
     public Optional<Task> getTaskById(long id){
         Optional<Task> task = taskRepository.findById(id);
@@ -62,8 +68,6 @@ public class TaskService {
             Topic topic = receiveTopic.get();
             if (receiveTask.isPresent()) {
                 error.put("error insertion", "name already existant");
-                CustomeException ex = new CustomeException("error", error);
-                throw ex;
           }
           Task task= new Task();
           task.setName(taskDTO.getName());
@@ -71,15 +75,49 @@ public class TaskService {
           task.setTopic(topic);
           //gestion date a faire 
 
+          String dateToStr = String.format("%1$tY-%1$tm-%1$td", taskDTO.getDeadline());
+          Boolean verification = isBeforeToday(dateToStr);
+          if (verification) {
+            task.setDeadline(taskDTO.getDeadline());
+          } else {
+            error.put("error", "date is note receivable");
+          }
           taskRepository.save(task);
           return task;
           
-        } else {
+        }  else if (!error.isEmpty()){
             error.put("error topic", "topic no existant");
             CustomeException ex = new CustomeException("error", error);
             throw ex;
         }
+        return null;
        
+    }
+
+    public boolean valideLaDate(String laDate){
+        if(laDate.length()==0){
+            return false;
+        }
+        String dateFormat = "dd/MM/yyyy";
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        sdf.setLenient(false);
+        try {
+            this.theDate = sdf.parse(laDate);
+        } catch (java.text.ParseException e) {
+            return false;
+        }
+        return true;
+    }
+    
+    public boolean isBeforeToday(String laDate){
+        
+        if(this.valideLaDate(laDate)){
+            Date current = new Date();
+            if(this.theDate.before(current)){
+                return true;
+            }
+        }
+        return false;
     }
 
 }
