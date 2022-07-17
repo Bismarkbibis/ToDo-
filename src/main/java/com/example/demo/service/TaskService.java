@@ -2,9 +2,6 @@ package com.example.demo.service;
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,37 +35,57 @@ public class TaskService {
         return task;
     }
 
-    public void deleteTask(Long id) {
-        taskRepository.deleteById(id);
+    public void deleteTask(long id) {
+        System.out.println(id);
+      taskRepository.deleteById(id);
+
     }
 
-    public Task updateTask(TaskDTO taskDTO) throws CustomeException {
-        Optional<Task> receiveTask= taskRepository.findByName(taskDTO.getName());
+
+    public Task updateTask(long id,TaskDTO taskDTO) throws CustomeException {
+        Optional<Task> receiveTask= taskRepository.findById(id);
         if (receiveTask.isPresent()) {
+            System.out.println("SERVICE           "+taskDTO.getName());
+
             Task task = receiveTask.get();
             task.setName(taskDTO.getName());
             task.setDescription(task.getDescription());
+            taskRepository.save(task);
+            return task;
          }
          error.put("error update", "name already existant");
          CustomeException ex = new CustomeException("error", error);
          throw ex;      
     }
 
+
+    /**
+     * @return
+     */
     public List<Task> getAllTask() {
         List<Task> listTask= taskRepository.findAll();
         return listTask;
     }
 
-    
-    
+
+    /**
+     * @param taskDTO
+     * @return
+     * @throws CustomeException
+     */
     public Task creatTask(TaskDTO taskDTO) throws CustomeException {
         Optional<Task> receiveTask= taskRepository.findByName(taskDTO.getName());
         Optional<Topic> receiveTopic = topicRepository.findById(taskDTO.getTopic());
-        if (receiveTopic.isPresent()) {
-            Topic topic = receiveTopic.get();
-            if (receiveTask.isPresent()) {
-                error.put("error insertion", "name already existant");
-          }
+
+        // if (receiveTask.isPresent()) {
+        //     System.out.println("hellloo          "+receiveTask.get());
+        //     error.put("error insertion", "name already existant");
+        // }
+
+      if (receiveTopic.isPresent()) {
+          Topic topic = receiveTopic.get();
+          System.out.println("hellloo          "+topic.getName());
+          
           Task task= new Task();
           task.setName(taskDTO.getName());
           task.setDescription(taskDTO.getDescription());
@@ -77,23 +94,35 @@ public class TaskService {
 
           String dateToStr = String.format("%1$tY-%1$tm-%1$td", taskDTO.getDeadline());
           Boolean verification = isBeforeToday(dateToStr);
-          if (verification) {
+          if (verification==true) {
+            System.out.println("  "+taskDTO.getDeadline());
             task.setDeadline(taskDTO.getDeadline());
           } else {
             error.put("error", "date is note receivable");
           }
           taskRepository.save(task);
           return task;
-          
-        }  else if (!error.isEmpty()){
+        }else if(!receiveTopic.isPresent()){
+            System.out.println("erreur 0002");
+            error.put("error", "topic not present");
+        }  
+        
+        if (!error.isEmpty()){
+            System.out.println("erreur 0003");
+
             error.put("error topic", "topic no existant");
             CustomeException ex = new CustomeException("error", error);
             throw ex;
         }
+        
         return null;
        
     }
 
+    /**
+     * @param laDate
+     * @return
+     */
     public boolean valideLaDate(String laDate){
         if(laDate.length()==0){
             return false;
@@ -109,6 +138,10 @@ public class TaskService {
         return true;
     }
     
+    /**
+     * @param laDate
+     * @return
+     */
     public boolean isBeforeToday(String laDate){
         
         if(this.valideLaDate(laDate)){
@@ -119,5 +152,4 @@ public class TaskService {
         }
         return false;
     }
-
 }

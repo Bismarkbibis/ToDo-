@@ -12,6 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,14 +26,15 @@ public class Task implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     @Column(nullable = false,length = 255)
     private String name;
     @Column(nullable = true,length = 255)
     private String description;
 
-    @Column(nullable = false)
+    @JsonIgnore
+    @Column(nullable = true)
     @Temporal(TemporalType.DATE)
     private Date deadline;
 
