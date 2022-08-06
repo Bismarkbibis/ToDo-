@@ -43,11 +43,10 @@ public class Task implements Serializable{
     private Topic topic;
 
 
-    public Task(String name, String description, Date deadline, Topic topic) {
+    public Task(String name, String description, Date deadline) {
         this.name = name;
         this.description = description;
         this.deadline = deadline;
-        this.topic = topic;
     }
     
     

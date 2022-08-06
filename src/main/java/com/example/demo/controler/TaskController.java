@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.example.demo.exception.CustomeException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -38,53 +39,30 @@ public class TaskController {
     @GetMapping("/all")
     public ResponseEntity<List<Task>> getAllTasks() {
         List<Task>listTask= taskService.getAllTask();
-        System.out.println("ELEMENT 1 "+listTask.get(1));
-
         return ResponseEntity.ok(listTask);
     }
     
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}",produces = {"application/json","application/xml"})
     public ResponseEntity<Optional<Task>> getTask(@PathVariable("id") long id) {
         Optional<Task> task = taskService.getTaskById(id);
-        System.out.println(" by Id "+task.get());
         return ResponseEntity.ok(task);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public void deletTaskById(@PathVariable( "id") long id){
+    @DeleteMapping(value = "/delete/{id}",produces = {"application/json","application/xml"})
+     void deletTaskById(@PathVariable( "id") long id){
         taskService.deleteTask(id);
     }
 
-
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Task> receiveTaskUpdate(@PathVariable(value = "id") long id, @RequestBody TaskDTO taskDTO ) {
-        try {
-            System.out.println(""+taskDTO.getName());
+    @PutMapping(value = "/update/{id}",produces = {"application/json","application/xml"})
+    public ResponseEntity<Task> updatTask(@PathVariable(value = "id") long id, @RequestBody TaskDTO taskDTO ) {
             Task task = taskService.updateTask(id, taskDTO);
-            System.out.println("AAAAAAA     "+taskDTO.getName());
-
             return ResponseEntity.ok(task);
-        } catch (CustomeException e) {
-            e.getMessage();
-        }
-        return null;
     }
 
 
-
-
     @PostMapping(value="/insert",produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Task> receiveTaskCreated(@RequestBody TaskDTO taskDTO) {
-        //TODO: process POST request
-        try {
-             System.out.println("oookkkkk");
-             Task task = taskService.creatTask(taskDTO); 
-             System.out.println("no dispp");
-             return ResponseEntity.ok(task);
-        } catch (Exception e) {
-            e.printStackTrace(); 
-        }
-        return null; 
+    public ResponseEntity<Task> creatTask(@RequestBody TaskDTO taskDTO) {
+        Task task = taskService.creatTask(taskDTO);
+        return ResponseEntity.ok(task);
     }
 }

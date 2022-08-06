@@ -3,23 +3,37 @@ package com.example.demo.exception;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
+
+@Getter
+@Setter
 @NoArgsConstructor
-public class CustomeException extends Exception {
-    
-    private Map<String, String> error = new HashMap<>();
+@ResponseStatus(value = HttpStatus.NOT_FOUND,reason = "not accesible")
+public class CustomeException extends RuntimeException {
 
-    public CustomeException(String message,Map<String, String> error2) {
-        super(message);
-        this.error=error2;
+    private String resourceName;
+    private String fieldName;
+    private Long fieldValue;
+
+    public CustomeException(String resourceName, String fieldName, Long fieldValue) {
+        super();
+        this.resourceName = resourceName;
+        this.fieldName = fieldName;
+        this.fieldValue = fieldValue;
     }
 
-    public CustomeException(Throwable cause) {
-        super(cause);
+    public CustomeException(String resourceName, String fieldName) {
+        this.resourceName = resourceName;
+        this.fieldName = fieldName;
     }
 
     public CustomeException(String message) {
         super(message);
     }
+
 }

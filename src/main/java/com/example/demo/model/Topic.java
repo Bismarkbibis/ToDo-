@@ -25,7 +25,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @Entity
-@Table(name = "Todo")
+@Table(name = "Topic")
 public class Topic implements Serializable {
 
     @Id
@@ -46,9 +46,5 @@ public class Topic implements Serializable {
     public Topic() {
         tasks = new ArrayList<>();
     }
-
-
-    
-
 
 }
